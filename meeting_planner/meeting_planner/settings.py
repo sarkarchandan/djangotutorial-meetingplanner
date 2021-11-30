@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'website',  # Register the website app to be run as part of the Django project.
+    'website',  # Register the website app
+    'meetings',  # Register the meetings app
 ]
 
 MIDDLEWARE = [

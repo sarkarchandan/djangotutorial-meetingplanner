@@ -81,9 +81,236 @@ database. However, when we deal with very complex relational schemas, Django oft
 situations by itself, and in those cases we need to provide custom migration strategies. In this project we won't deal 
 with such situations.
 
-As a starting point, we see in the `meeting_planner` 
+As a starting point, we see in the `meeting_planner/meeting_planner/settngs.py` the following installed apps.
 
-* Create Django model
-* Create and run database migration
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'website',
+]
+```
+These are some names, which pop up, when we run the server using `python meeting_planner/manage.py runserver` command 
+as well.
+
+```text
+You have 18 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, 
+auth, contenttypes, sessions. Run 'python manage.py migrate' to apply them.
+```
+
+Each migration is a Python script, which makes some changes in respective database models. We can see the details of the 
+migrations using the command `python  meeting_planner/manage.py showmigrations` and this initially creates the following 
+list.
+
+```text
+admin
+ [ ] 0001_initial
+ [ ] 0002_logentry_remove_auto_add
+ [ ] 0003_logentry_add_action_flag_choices
+auth
+ [ ] 0001_initial
+ [ ] 0002_alter_permission_name_max_length
+ [ ] 0003_alter_user_email_max_length
+ [ ] 0004_alter_user_username_opts
+ [ ] 0005_alter_user_last_login_null
+ [ ] 0006_require_contenttypes_0002
+ [ ] 0007_alter_validators_add_error_messages
+ [ ] 0008_alter_user_username_max_length
+ [ ] 0009_alter_user_last_name_max_length
+ [ ] 0010_alter_group_name_max_length
+ [ ] 0011_update_proxy_permissions
+ [ ] 0012_alter_user_first_name_max_length
+contenttypes
+ [ ] 0001_initial
+ [ ] 0002_remove_content_type_name
+sessions
+ [ ] 0001_initial
+```
+
+Each of the lines shown in this list is a migration. They are automatically generated and perform some steps to alter 
+DDL schemas in the database.
+
+We can perform these migrations using the command `python meeting_planner/manage.py migrate` and this command performs 
+the migrations.
+
+```text
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying sessions.0001_initial... OK
+```
+
+After applying the migrations, we can check if the database appears to be in correct state using the command 
+`python meeting_planner/manage.py dbshell`. There could be alternative ways as well as using the DB Browser for SQLIte 
+etc. In the shell, we can use simple tricks and queries like this.
+
+```text
+sqlite> .tables # To show all tables
+auth_group                  auth_user_user_permissions
+auth_group_permissions      django_admin_log          
+auth_permission             django_content_type       
+auth_user                   django_migrations         
+auth_user_groups            django_session
+
+sqlite> select * from django_migrations; # This is an important table storing all migrations
+1|contenttypes|0001_initial|2021-11-30 06:30:08.400864
+2|auth|0001_initial|2021-11-30 06:30:08.425836
+3|admin|0001_initial|2021-11-30 06:30:08.435712
+4|admin|0002_logentry_remove_auto_add|2021-11-30 06:30:08.452346
+.
+.
+etc
+
+sqlite> .exit 0 # Exits from the sqlite console with a return code of success
+```
+
+* Create Django model.
+  * Create a new meetings app using the command `python manage.py startapp meetings` and also register the meetings' 
+    app to the `INSTALLED_APPS` list in the `meeting_planner/settings.py`. Creating the app also creates several files, 
+    as we have seen before. Among them following are the ones, which we'd make use of for now.
+    * admin.py - Configure the Django admin interface
+    * models.py - Create the model class for the meeting
+    * views.py - Create the view for the model class
+  * We create a class Meeting extending from the `django.db.models.Model`, where we put the fields as the attribute of 
+    the class itself. Django looks at the class attributes of the model class, and creates `__init__` method itself. 
+* Create and run database migration.
+  * We create a migration of the Meeting model with the command `python manage.py makemigrations` and this creates the 
+    following migration script in migrations directory of the meetings' app.
+    ```text
+    Migrations for 'meetings':
+    meetings/migrations/0001_initial.py
+      - Create model Meeting
+    ```
+    A migration with the name 0001_initial has been created. The type `django.db.migrations.Migration` is independent of 
+    the underlying database being used. That means, depending on the database being used, each time the SQL script, that 
+    it would result in, could be different. In this case we can inspect the sqlite CREATE TABLE query with using the 
+    command `python manage.py sqlmigrate meetings 0001`. We don't need to mention the full name of the migration and 
+    this would output the following sql query.
+    ```text
+    BEGIN;
+    --
+    -- Create model Meeting
+    --
+    CREATE TABLE "meetings_meeting" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "title" varchar(200) NOT NULL, 
+    "date" date NOT NULL);
+    COMMIT;
+    ```
+    And now like before, we can run the new migration with the command `python manage.py migrate` and this would create 
+    a table called, `meetings_meeting`. The table name is generated by prepending the app name to the model. We can 
+    inspect the same using the sqlite console like before, using the command `python manage.py dbshell`.
 * Edit data with Django admin interface
+  One use of the admin interface is to create entries for the model classes. For doing that we need to register the 
+  model with the admin site, and configure a superuser.
+  * To register our model with the admin interface, we need to go to `meeting_planner/meetings/admin.py` and register 
+    our model using the `django.contrib.admin.register` function. The url path for admin interface is already configured 
+    in the `meeting_planner/meeting_planner/urls.py`, which acts slightly differently than all other paths.
+  * Before accessing the admin page, we need to create a superuser with the command, `python manage.py createsuperuser`, 
+    which prompts for credentials and provides a basic password strength validation as well.
+  * Upon creating the superuser, we can access the admin site by running the server again and authenticate. Upon 
+    logging in, we can see two predefined tables, `Groups`, and `Users`, which are used by admins to manage access to 
+    the web application. For now, we'd simply locate the `Meeting` table and make few entries. We'd also appreciate the 
+    fact, that Django creates customized html forms for us to interact with the tables. Upon doing this, we can also 
+    validate the data entry to the table using the `dbshell` utility or DB Browser.
+
+Now, that we understand a bit about the migrations, and how they work, we can create convenient easy to follow workflow 
+for the simpler use cases.
+```text
+# Step 0: Make sure, that we have registered the app in the INSTALLED_APPS list of the main web app.
+# Step 1: Change the model code in the specific registered app.
+# Step 2: Generate migration script using: python manage.py makemigrations and review it.
+# Step 3: Check the lost of the migrations to be executed using: python manage.py showmigrations and review it.
+# Step 4: Run the migrations using: python manage.py migrate and review it via SQL utilities.
+```
+
+Now we look into a bit advanced scenario, which is yet again the simpler version of the situations, that we might 
+encounter during the day-to-day activities with a Django project. In this scenario, we are going to create another 
+model, add a foreign key, which stands as the relational database equivalent of an object having reference of another 
+object.
+
+* We add two new fields, `start_time: TimeField`, and `duration: IntegerField` in the `Meeting` model class.
+* At this point, we could try to create a new migration, since this is a DDL schema change, however there is an issue. 
+  When we execute `python manage.py makemigrations`, there should be a warning, which goes like this.
+  ```text
+  You are trying to add a non-nullable field 'duration' to meeting without a default; we can't do that (the database 
+  needs something to populate existing rows).
+  ```
+  This tells us, that the IntegerField is not nullable, when the migration would be created, what happens for the 
+  existing rows of the table !. In order to fix this we further need to modify the new fields and a default value, where 
+  needed.
+* After adding the default strategies, we can again try `python manage.py makemigrations` and this time it should 
+  succeed with creating new migration e.g., `meetings/migrations/0002_auto_20211130_0914.py`. We can naturally check 
+  the same file and also check the resulting sql with `python manage.py sqlmigrate meetings 0002`, and this time the 
+  sql would be a bit more complex.
+  ```text
+  BEGIN;
+  --
+  -- Add field duration to meeting
+  --
+  CREATE TABLE "new__meetings_meeting" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "duration" integer NOT NULL, 
+  "title" varchar(200) NOT NULL, "date" date NOT NULL);
+  INSERT INTO "new__meetings_meeting" ("id", "title", "date", "duration") SELECT "id", "title", "date", 1 FROM 
+  "meetings_meeting";
+  DROP TABLE "meetings_meeting";
+  ALTER TABLE "new__meetings_meeting" RENAME TO "meetings_meeting";
+  --
+  -- Add field start_time to meeting
+  --
+  CREATE TABLE "new__meetings_meeting" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "title" varchar(200) NOT NULL, 
+  "date" date NOT NULL, "duration" integer NOT NULL, "start_time" time NOT NULL);
+  INSERT INTO "new__meetings_meeting" ("id", "title", "date", "duration", "start_time") SELECT "id", "title", "date", 
+  "duration", '09:00:00' FROM "meetings_meeting";
+  DROP TABLE "meetings_meeting";
+  ALTER TABLE "new__meetings_meeting" RENAME TO "meetings_meeting";
+  COMMIT;
+  ```
+  We see, that for each of the new columns, it is creating a new table, inserting data from the old, dropping the old 
+  table, and finally renaming the new table to the old table name.
+* We migrate to the new schema using `python manage.py migrate`.
+* Before logging in to the admin interface and interacting with the table again, it would be a good idea to add a 
+  string representation of our model in the class, because this would result in a better viewing of the object in the 
+  UI. This does not need a separate migration, because this is not a DDL schema change.
+* Now we create a separate new model called `Room` in the same meetings' app. After creating this new model, we can 
+  use `python manage.py makemigrations` command to create the migration. However, we have to add another constraint 
+  before we actually go ahead and migrate. A meeting takes place at a certain room. Hence, `Meeting` object should have 
+  a reference of a given `Room` object. This translates into relational table as a column for room in the meeting table 
+  as a foreign key constraint for room table. A certain meeting id from the meeting table is a foreign key in the room 
+  table. While adding the foreign key constraint, we'd use the deletion strategy as cascade. That means, when a room 
+  is deleted, all meetings scheduled in that room are also deleted.
+  > At this point, when we'd try to create a migration for our changes, we're likely to face a very similar problem as 
+  > before, for the existing data in the meetings table. It would ask us, what happens for the room entry of the pre-
+  > existing meetings. This time instead of fixing with a default value, we'd rather do something drastic. We'd delete 
+  > all the predefined migrations as well as the default database file, `db.sqlite3`. And then we create our migrations 
+  > from a clean slate.
+* Now upon cleaning up, and running `makemigrations` again, we'd see a new migrations handling the database schemas from 
+  the scratch. A new database, `db.sqlite3` files would also be created. But this has some implications as well, which 
+  makes it a questionable approach for an already existing complex project. Upon deleting the database, we lost our 
+  previous table schemas, and the superuser as well. Our next step therefore is, <strong> register Room class to be 
+  used with the admin site </strong>, make all migrations, and create a superuser before accessing the admin interface. 
+  We can see all migrations at this point using `python manage.py showmigrations` command before actually making them. 
+* We now make the migrations, and create superuser using the `python manage.py migrate`, and `python manage.py create
+  superuser` commands before running the server.
+* Now upon accessing the admin interface, we can create meeting, and appreciate Django proving us with the convenient 
+  UI option to add a room on the fly.
+
 
