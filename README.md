@@ -1,8 +1,8 @@
 # Django tutorial project - Meeting Planner
----
+
 
 ## Django project structure
----
+
 
 A Django project is a big python package, which typically contains models, views, templates, and urls among others. A 
 Django project also contains several `apps`, each of them itself is another child package of the main Django project 
@@ -11,8 +11,8 @@ smaller `apps`. In more advanced use cases, these `apps` can be reused by multip
 scope for this beginner project. Each of these `apps` should be small, easily defined unit of work, contributing to the 
 main web application.
 
-## Useful commands:
----
+## Useful Commands
+
 
 * `django-admin startproject meeting_planner` - To start a django project called meeting_planner.
 * `python meeting_planner/manage.py runserver` - To start the django web server for the meeting_planner project in its 
@@ -25,7 +25,7 @@ initial form.
 > meeting_planner web application. For example, we change the `LANGUAGE_CODE` or `TIME_ZONE` used in the project.
 
 ## Files created by the startproject command and their purposes:
----
+
 
 * `meeting_planner/manage.py` - Entry point for the project, which dispatches the commands like _runserver_ and 
 _manage_ etc.
@@ -35,8 +35,8 @@ _manage_ etc.
 * `meeting_planner/meeting_planner/settings.py` - Customizes the project as per our needs.
 * `meeting_planner/meeting_planner/urls.py` - Registers routes to the webserver.
 
-## Phase I:
----
+## Phase I
+
 
 In the first phase, we add a simple page to the web application, by registering route and providing the respective 
 handler function as a view.
@@ -62,8 +62,8 @@ handler function as a view.
   something like `path('', home)`.
 * Run server and view the page.
 
-## Phase II:
----
+## Phase II
+
 
 In the second phase, we deal with capability of Django to implement the object relational mapping as well as database 
 migration. We don't go deep into the concept of migration, and limit our scope of this project to the initial migration 
@@ -312,5 +312,29 @@ object.
   superuser` commands before running the server.
 * Now upon accessing the admin interface, we can create meeting, and appreciate Django proving us with the convenient 
   UI option to add a room on the fly.
+
+## Phase III
+
+
+Model-Template-View pattern for web applications are synonymous to MVC pattern. Three components mode, template and 
+views, each has fixed responsibility. In this phase, we add templates to our application, subsequently we make all of 
+our components to work together. We call models and templates from view. We add view parameters in url, and we also 
+deal with HTTP 404 bad request error, when necessary. 
+
+> Templates are the skeleton of an HTML page. We generate displayable HTML content from templates.
+
+> Views are the components, that actually displays the data in the browser. Hence, they make use of the templates. In 
+  order to display the data in browser view make use of the models and pass the data from the models to the templates.
+
+* We created a template inside the `website` app in the specific location `website/templates/website/welcome.html`. The 
+  reason for putting the actual html template inside another website directory inside the **templates** directory is, 
+  to further modularize the app templates. The reason for doing this is, two or more apps can share common templates. 
+  In this case, we designated, that __welcome.html__ template would be used by the website app only. This is not a 
+  requirement for Django, rather for better organizing our projects. However, putting the templates for an app inside 
+  the **templates** directory is the default option in Django. This is customizable via `settings.py` file of the Django 
+  project. This is an advanced concept, and we won't try to do it for now.
+* We could use [Jinja](https://jinja.palletsprojects.com/en/3.0.x/) syntax inside our template to implement dynamic 
+  webpage. In this example, we have used several variables to supply some basic data dynamically to the template from 
+  the view function.
 
 

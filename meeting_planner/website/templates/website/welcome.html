@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Meeting Planner</title>
+    </head>
+    <body>
+        <!--The double curly braces bring the real power to the templates, enabling a dynamic webpage. Here
+        message is a variable, for which we can supply the value from the view function as a dictionary. This
+        kind of constructs are called Jinja syntax.-->
+        <h1>Welcome to the {{ name }}</h1>
+        <p>
+            This is the demo application for the Django course taught
+            by the <a href="https://app.pluralsight.com/profile/author/reindertjan-ekker"
+                      target="_blank">{{ author }}</a>
+        </p>
+        <p>
+            {{ message }}
+        </p>
+    </body>
+</html>
