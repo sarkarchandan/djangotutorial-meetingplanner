@@ -319,22 +319,67 @@ object.
 Model-Template-View pattern for web applications are synonymous to MVC pattern. Three components mode, template and 
 views, each has fixed responsibility. In this phase, we add templates to our application, subsequently we make all of 
 our components to work together. We call models and templates from view. We add view parameters in url, and we also 
-deal with HTTP 404 bad request error, when necessary. 
+deal with HTTP 404 not found error, when necessary. 
 
 > Templates are the skeleton of an HTML page. We generate displayable HTML content from templates.
 
 > Views are the components, that actually displays the data in the browser. Hence, they make use of the templates. In 
   order to display the data in browser view make use of the models and pass the data from the models to the templates.
 
-* We created a template inside the `website` app in the specific location `website/templates/website/welcome.html`. The 
-  reason for putting the actual html template inside another website directory inside the **templates** directory is, 
-  to further modularize the app templates. The reason for doing this is, two or more apps can share common templates. 
-  In this case, we designated, that __welcome.html__ template would be used by the website app only. This is not a 
-  requirement for Django, rather for better organizing our projects. However, putting the templates for an app inside 
-  the **templates** directory is the default option in Django. This is customizable via `settings.py` file of the Django 
-  project. This is an advanced concept, and we won't try to do it for now.
-* We could use [Jinja](https://jinja.palletsprojects.com/en/3.0.x/) syntax inside our template to implement dynamic 
-  webpage. In this example, we have used several variables to supply some basic data dynamically to the template from 
-  the view function.
+Following are the tasks, which we accomplish in this phase.
+
+* Introduce the templates.
+  * We created a template inside the `website` app in the specific location `website/templates/website/welcome.html`. The 
+    reason for putting the actual html template inside another website directory inside the **templates** directory is, 
+    to further modularize the app templates. The reason for doing this is, two or more apps can share common templates. 
+    In this case, we designated, that __welcome.html__ template would be used by the website app only. This is not a 
+    requirement for Django, rather for better organizing our projects. However, putting the templates for an app inside 
+    the **templates** directory is the default option in Django. This is customizable via `settings.py` file of the Django 
+    project. This is an advanced concept, and we won't try to do it for now.
+  * We could use [Jinja](https://jinja.palletsprojects.com/en/3.0.x/) syntax inside our template to implement dynamic 
+    webpage. In this example, we have used several variables to supply some basic data dynamically to the template from 
+    the view function.
+* Complete the model-view-template pattern.
+  * We make minor change in the template __welcome.html__, and include variable in the template context. This variable 
+    should show the number of the total number of meetings in the database at any given moment. We include the value 
+    of this variable ot the template context from views using `Meeting.objects.count()` call. This may change in the 
+    future, as we refactor.
+  * Now we need to implement a meeting detail page. For that we take three distinct but relatable steps.
+    * We include a new templates, having the similar semantics as before at `meetings/templates/meetings/detail.html`. 
+      In this template html, we access various the fields of the `Meeting` model and display.
+    * We create a view function `detail` in the **meetings** app, `meetings/views.py`. This function takes an additional 
+      keyword argument called, `meeting_id`, which would be used to select a particular meeting from all the meetings.
+    * Finally, we create the url mapping for the meeting details page in the `meeting_planner/urls.py`, and this time 
+      we use special syntax for the path, `meeting/<int:meeting_id>`. This is, how we register a path parameter in 
+      Django. It tells, that the call to meeting detail page has to be made like this, 
+      `http://<host>:<port>/meeting/<integer id>` e.g., http://localhost:8000/meeting/1. But we also have to think about 
+      implementing the error handling for a non-existing meeting id.
+    * In order to retrieve a Meeting model object, earlier were calling `Meeting.objects.get(pk=meeting_id)`, which 
+      results in an exception, when a model is not found. There is a bit more elegant way to handle, that situation, 
+      called `get_object_or_404` in Django, which is a utility function, that returns the desired object, when found 
+      or raises `Http404` exception otherwise. We now retrieve the meeting object like this instead, `get_object_or_404
+      (klass=Meeting, pk=meeting_id)`, and that the 404 resource not found page for us, when we provide some 
+      non-existing, invalid value, or nothing as the path parameter.
+
+<img src="mtv.png" alt="MTV Pattern"/>
+<center> Image source: <a href="https://app.pluralsight.com/library/courses/django-getting-started/table-of-contents" 
+target="_blank">django-getting-started</a> </center>
+
+At the end this phase, we can summarize, that the `Model` represents data, and is responsible for the object relational 
+mapping. `Template` represents the presentation of the data into dynamic webpages. `View` maintains the behavior for a 
+certain url pattern and works with models and templates. As we mentioned already, this same MTV patterns is known as 
+MVC pattern outside Python web application ecosystem of packages. Following are some example functions, which we have 
+used in this phase so far.
+  * [Model.objects.all](https://docs.djangoproject.com/en/3.2/topics/db/queries/#retrieving-all-objects) 
+  = Returns a list of all objects
+  * [Model.objects.count](https://docs.djangoproject.com/en/3.2/ref/models/querysets/#count) 
+  = Returns the count of all objects
+  * [Model.objects.get](https://docs.djangoproject.com/en/3.2/topics/db/queries/#retrieving-a-single-object-with-get) 
+  = Gets a specific object by id
+
+
+
+
+
 
 

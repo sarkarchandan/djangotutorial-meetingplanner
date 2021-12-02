@@ -1,6 +1,7 @@
 import datetime
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
+from meetings.models import Meeting
 
 
 # Create your views here.
@@ -36,5 +37,5 @@ def home(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name='website/welcome.html', context={
         'name': 'Meeting Planner',
         'author': 'Reindert-Jan Ekker',
-        'message': 'Sample message, would be updated later',
+        'num_meetings': Meeting.objects.count(),
     })
