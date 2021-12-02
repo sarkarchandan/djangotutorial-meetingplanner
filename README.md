@@ -418,6 +418,28 @@ learn the link building.
       `meetings/<int:meeting_id>` url path. And then we refer to that name from the Django syntax used in the template 
       body. Without this adjustment, there would be an error in the web server called, `NoReverseMatch: Reverse for 
       'detail' not found. 'detail' is not a valid view function or pattern name.`.
+    * At this point we have practiced with the details, we learned above and added separate page for showing all the 
+      rooms, and a detail page for each room as well. We have also added a navigation block for each page to go back 
+      to the home page. However, we need to follow some best practices in order to manage our url mappings. These best 
+      practices are the following.
+      * Each app has its own urls.py.
+        * We have created the `meeting_planner/meetings/urls.py` file, which now has one list called `urlpatterns`, 
+          similar to the `meeting_planner/meeting_planner/urls.py`, but this list in the `meetings` app only has the 
+          url mappings for its own views. This way a given app manages only its own urls and corresponding views as a 
+          single unit.
+      * App prefix in main urls.py in the main application, and include app urls in main urls.
+        * In order to enable each app, managing its own urls and views, we have to make use of `django.urls.include` 
+          function. In the `meeting_planner/meeting_planner/urls.py`, now we include the paths from the `meetings` app 
+          using this element in our previous `urlpatterns` list instead,  `path('meetings/', include('meetings.urls'))`. 
+          There however one underlying details, we need to understand here about app prefixes, and this has everything to 
+          do with, how Django manages the urls with this new organization. The `meeting_planner/meetings/urls.py` has 
+          the following mappings, `<int:meeting_id>`, `rooms`, `rooms/<int:room_id>`, and we have included these url 
+          mappings in main `urlpatterns` with the prefix `meetings/`. This means, Django would implicitly add this prefix 
+          to all of the `meetings` app url mappings during the path resolution e.g., request to show the details of a 
+          specific meeting would have url path `meetings/<meeting_id>`, but request to show the details of a specific room 
+          would have the url path `meetings/rooms/<room_id>`. Similarly, request to show all rooms would have the url 
+          path `meetings/rooms`, and Django would manage all these internally.
+
 
 
 
