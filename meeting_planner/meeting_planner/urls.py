@@ -21,7 +21,7 @@ from meetings.views import detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('welcome', welcome),
-    path('', home),
-    path('meeting/<int:meeting_id>', detail),  # Include url mapping with an integer path parameter
+    path('welcome', welcome, name='welcome'),
+    path('', home, name='home'),
+    path('meetings/<int:meeting_id>', detail, name='detail'),  # Include url mapping with an integer path parameter
 ]

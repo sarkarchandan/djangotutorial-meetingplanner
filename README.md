@@ -350,10 +350,10 @@ Following are the tasks, which we accomplish in this phase.
     * We create a view function `detail` in the **meetings** app, `meetings/views.py`. This function takes an additional 
       keyword argument called, `meeting_id`, which would be used to select a particular meeting from all the meetings.
     * Finally, we create the url mapping for the meeting details page in the `meeting_planner/urls.py`, and this time 
-      we use special syntax for the path, `meeting/<int:meeting_id>`. This is, how we register a path parameter in 
+      we use special syntax for the path, `meetings/<int:meeting_id>`. This is, how we register a path parameter in 
       Django. It tells, that the call to meeting detail page has to be made like this, 
-      `http://<host>:<port>/meeting/<integer id>` e.g., http://localhost:8000/meeting/1. But we also have to think about 
-      implementing the error handling for a non-existing meeting id.
+      `http://<host>:<port>/meetings/<integer id>` e.g., http://localhost:8000/meetings/1. But we also have to think 
+      about implementing the error handling for a non-existing meeting id.
     * In order to retrieve a Meeting model object, earlier were calling `Meeting.objects.get(pk=meeting_id)`, which 
       results in an exception, when a model is not found. There is a bit more elegant way to handle, that situation, 
       called `get_object_or_404` in Django, which is a utility function, that returns the desired object, when found 
@@ -376,6 +376,49 @@ used in this phase so far.
   = Returns the count of all objects
   * [Model.objects.get](https://docs.djangoproject.com/en/3.2/topics/db/queries/#retrieving-a-single-object-with-get) 
   = Gets a specific object by id
+
+## Phase IV
+
+In this phase, we are going to work with URLs and link building. Before, that we would like to have revision of our 
+Django project structure. For complex web applications, Django project structure can become very confusing, and it 
+is important to understand, what is where. Following is our simple project structure, inside the `djangotutorial` 
+workspace.
+
+* `meeting_planner` is the Django project, which we have created using the `django-amin startproject` command. At this 
+  level we see the `manage.py` file, which acts as the central command line management entrypoint, because after creating 
+  this Django project, we have dispatched all commands in context of manage.py. At the same level we also see the 
+  `db.sqlite3` file, which functions as the central database.
+* `meeting_planner/meeting_planner` is the main Django app (inside the meeting_planner Django project). This is, where 
+  the `settings.py`, and `urls.py` files reside.
+* `meeting_planner/meetings` is the app, where we consolidate our models, for which we have two, `Meeting`, and `Room`. 
+  It also therefore, defines the views and templates to control, how the model data would be displayed.
+* `meeting_planner/website` is the app, where we only define the templates and views, which are somewhat specific to the 
+  website / homepage itself, and has in general nothing to do with any specific model so far.
+
+In this phase, we'd implement a utility, so that we can navigate to a certain meeting from the homepage itself. That 
+means, we need to build links to each meeting details, and include them in the homepage. In order to do that, we'd now 
+learn the link building.
+
+* Iterate inside the template.
+  * Firstly, we can use combination of [Jinja Templates](https://jinja.palletsprojects.com/en/3.0.x/templates/) in order 
+    to write some rudimentary code inside the templates. For instance, we have made use of {{}} for expressions and 
+    {%%} for statements in the `meeting_planner/website/templates/website/welcome.html` template. In this case, we are 
+    generating some links for our meetings.
+* Named URLs
+  * While generating the links for the meetings, we need some efficient mechanism, such that, when we need to change some 
+    links, it does not break things, or we don't need to make changes in a lot of places. Named url mappings provide us 
+    with an easy way to do it. In order to do that, we do mainly two things.
+    * In the `meeting_planner/website/templates/website/welcome.html`, instead of building our links inside the `li` tag 
+      like this `<a href="meetings/{{ mt.id }}"> {{ mt.title }} </a>`, we do it using a special Django syntax, 
+      `<a href="{% url 'detail' mt.id %}"> {{ mt.title }} </a>`. The advantage is, if we change the url from the central 
+      url.py, our links in the webpage adjust themselves accordingly without breaking.
+    * In order to make sure, that the above code works, we however have make another small change called named url. We'd 
+      refactor the path in the `meeting_planner/meeting_planner/urls.py` like this, 
+      `path('meetings/<int:meeting_id>', detail, name='detail')`. With this change, we are giving a name to that the 
+      `meetings/<int:meeting_id>` url path. And then we refer to that name from the Django syntax used in the template 
+      body. Without this adjustment, there would be an error in the web server called, `NoReverseMatch: Reverse for 
+      'detail' not found. 'detail' is not a valid view function or pattern name.`.
+
 
 
 

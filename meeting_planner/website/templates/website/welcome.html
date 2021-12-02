@@ -14,8 +14,18 @@
             by the <a href="https://app.pluralsight.com/profile/author/reindertjan-ekker"
                       target="_blank">{{ author }}</a>
         </p>
-        <p>
-            There is {{ num_meetings }} meetings in the database at the moment.
-        </p>
+        <h2> Meetings </h2>
+        <ul>
+            {# Here we use another Jinja syntax with % sign, which supports writing some code. In this case, we are #}
+            {# iterating over the list of Meeting objects. The programming constructs, which we can use here using #}
+            {# Jinja syntax are rudimentary. They are not exactly the Python statements. #}
+            {% for mt in meetings %}
+                <li>
+                    <!-- This <a href="/meetings/{{ mt.id }}"> {{ mt.title }} </a> is also possible, but the following
+                    is a special Django syntax, which makes things easier to maintain for us.-->
+                    <a href="{% url 'detail' mt.id %}"> {{ mt.title }} </a>
+                </li>
+            {% endfor %}
+        </ul>
     </body>
 </html>

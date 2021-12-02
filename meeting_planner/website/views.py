@@ -37,5 +37,5 @@ def home(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name='website/welcome.html', context={
         'name': 'Meeting Planner',
         'author': 'Reindert-Jan Ekker',
-        'num_meetings': Meeting.objects.count(),
+        'meetings': Meeting.objects.all(),
     })
