@@ -5,11 +5,14 @@
         <title>Meeting: {{ meeting.title }}</title>
     </head>
     <body>
+        <nav>
+            <a href="{% url 'home' %}"> Home </a>
+            <a href="{% url 'rooms' %}"> Rooms </a>
+        </nav>
         <h1> {{ meeting.title }} </h1>
         <p>
             This meeting has been scheduled on {{ meeting.date }}, at {{ meeting.start_time }}
             in <strong> {{ meeting.room }} </strong>.
         </p>
-        Go to <a href="{% url 'home' %}"> home </a>
     </body>
 </html>

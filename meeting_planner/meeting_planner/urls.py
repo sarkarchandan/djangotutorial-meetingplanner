@@ -16,12 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from website.views import welcome, home
-from meetings.views import detail
+from meetings.views import meeting_detail, room_detail, rooms
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('welcome', welcome, name='welcome'),
     path('', home, name='home'),
-    path('meetings/<int:meeting_id>', detail, name='detail'),  # Include url mapping with an integer path parameter
+    # Include url mapping with an integer path parameter
+    path('meetings/<int:meeting_id>', meeting_detail, name='meeting_detail'),
+    path('rooms', rooms, name='rooms'),
+    path('rooms/<int:room_id>', room_detail, name='room_detail'),
 ]
