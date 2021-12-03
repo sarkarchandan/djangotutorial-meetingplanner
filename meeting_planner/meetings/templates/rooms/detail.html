@@ -1,18 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Room: {{ room.name }}</title>
-    </head>
-    <body>
-        <nav>
-            <a href="{% url 'rooms' %}"> Rooms </a>
-            <a href="{% url 'home' %}"> Home </a>
-        </nav>
-        <h1> {{ room.name }} </h1>
-        <h2> Location: </h2>
-        <p>
-            In room number {{ room.room_number }} at {{ room.floor_number }} floor
-        </p>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}
+    Room: {{ room.name }}
+{%endblock%}
+
+{% block navigation_item %}
+    <a href="{% url 'rooms' %}"> Rooms </a>
+    <a href="{% url 'home' %}"> Home </a>
+{% endblock %}
+
+{% block content %}
+    <h1> {{ room.name }} </h1>
+    <h2> Location: </h2>
+    <p>
+        In room number {{ room.room_number }} at {{ room.floor_number }} floor
+    </p>
+{% endblock %}

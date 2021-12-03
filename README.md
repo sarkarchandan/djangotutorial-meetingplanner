@@ -186,7 +186,7 @@ sqlite> .exit 0 # Exits from the sqlite console with a return code of success
 ```
 
 * Create Django model.
-  * Create a new meetings app using the command `python manage.py startapp meetings` and also register the meetings' 
+  * Create a new `meetings` app using the command `python manage.py startapp meetings` and also register the meetings' 
     app to the `INSTALLED_APPS` list in the `meeting_planner/settings.py`. Creating the app also creates several files, 
     as we have seen before. Among them following are the ones, which we'd make use of for now.
     * admin.py - Configure the Django admin interface
@@ -439,6 +439,40 @@ learn the link building.
           specific meeting would have url path `meetings/<meeting_id>`, but request to show the details of a specific room 
           would have the url path `meetings/rooms/<room_id>`. Similarly, request to show all rooms would have the url 
           path `meetings/rooms`, and Django would manage all these internally.
+
+## Phase V
+
+In this phase we'd use CSS to add some style to our webpage. We'd also further organize the webpages and apply the 
+same style pattern to multiple pages using template inheritance.
+
+* We add custom stylesheet to the webpage as static content. It is an important thing to remember, that the stylesheet 
+  goes to a directory, called `static`, and not in the same directory as with the templates. Django has a very specific 
+  way to load such static content in the browser. In this exercise, we have created `website/static/website/style.css` 
+  inside the `website` package, just like we did for the templates. We have added some styles to the stylesheet to be 
+  applied to the body of the webpage. In order to link the stylesheet, we made use of Jinja syntax like this, 
+  `<link rel="stylesheet" href="{% static 'website/style.css' %}">`, and in order to make it work, we needed to 
+  instruct Django specifically towards the top of the html template file with, `{% load static %}` to load all the 
+  static resources to browser. Any resource, which we want to load in the browser e.g., an image also qualifies as a 
+  static content. We have also added an image to the website page now in the same way. Therefore, `static` is the 
+  keyword to use to load all external contents.
+* 
+* **Template Inheritance** helps to apply same style across the web application. We might have a complex multiple page 
+  web application, and we might want to maintain a common theme across all pages. Template inheritance comes handy 
+  in such a situation. In order to create an HTML template, we have created `website/templates/base.html`. The template 
+  html file is outside the namespace of app, because it would most likely be shared by multiple pages. In this base html 
+  file, we have applied the stylesheet. We have also introduced a block statement there, which takes the form of 
+  `{% block <block_name> %} {% endblock %}`. These blocks mark the content area, which would be replaced by the child 
+  html files, which would specialize the base html. With this base html in place, now we are going to make significant 
+  changes to the html file, starting with the `meeting_planner/website/templates/website.welcome.html`. Essentially, 
+  we would include a Django statement at the top `{% extends "base.html" %}` and then we would provide the content 
+  for the content blocks. 
+  > One interesting and beneficial aspect, is that the base templates can be used across the apps. For instance, in this 
+  > example, we have created the base template in the `website` app, but we can extend the same base template for the 
+  > pages defined in the `meetings` app as well, in the same way. Therefore, `extends` is the keyword a html page to 
+  > extend from a base template across the apps. We have to keep in mind, that wherever, we want the contents to be 
+  > replaced in child pages, we have to use `block` and `endblock` keywords to create a uniquely named block.
+
+
 
 
 

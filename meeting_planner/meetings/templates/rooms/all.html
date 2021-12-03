@@ -1,14 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Rooms</title>
-    </head>
-    <body>
-        <nav>
-            <a href="{% url 'home' %}"> Home </a>
-        </nav>
-        <h1> Meeting Rooms </h1>
+{% extends "base.html" %}
+
+{% block title %}
+    Rooms
+{% endblock %}
+
+{% block navigation_item %}
+     <a href="{% url 'home' %}"> Home </a>
+{% endblock %}
+
+{% block content %}
+    <h1> Meeting Rooms </h1>
         <ul>
             {% for rm in rooms %}
                 <li>
@@ -16,5 +17,4 @@
                 </li>
             {% endfor %}
         </ul>
-    </body>
-</html>
+{% endblock %}

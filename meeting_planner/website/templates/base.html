@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{%block title%}{%endblock%}</title>
+        <link rel="stylesheet" href="{% static 'website/style.css' %}">
+    </head>
+    <body>
+        <nav>
+            {% block navigation_item %}
+            {% endblock %}
+        </nav>
+        <img src="{% static 'website/simpson.gif' %}" width="100px">
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
