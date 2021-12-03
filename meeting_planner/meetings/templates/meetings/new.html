@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+    New Meeting
+{% endblock %}
+
+{% block navigation_item %}
+    <a href="{% url 'home'%}">Home</a>
+{% endblock %}
+
+{% block content %}
+    <h1>Plan a new meeting</h1>
+    <form method="post">
+        <table>
+            {{ form }}
+        </table>
+        {% csrf_token %}
+        <button type="submit">Schedule</button>
+    </form>
+{% endblock %}

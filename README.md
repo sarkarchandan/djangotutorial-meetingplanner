@@ -455,7 +455,7 @@ same style pattern to multiple pages using template inheritance.
   static resources to browser. Any resource, which we want to load in the browser e.g., an image also qualifies as a 
   static content. We have also added an image to the website page now in the same way. Therefore, `static` is the 
   keyword to use to load all external contents.
-* 
+
 * **Template Inheritance** helps to apply same style across the web application. We might have a complex multiple page 
   web application, and we might want to maintain a common theme across all pages. Template inheritance comes handy 
   in such a situation. In order to create an HTML template, we have created `website/templates/base.html`. The template 
@@ -472,6 +472,53 @@ same style pattern to multiple pages using template inheritance.
   > extend from a base template across the apps. We have to keep in mind, that wherever, we want the contents to be 
   > replaced in child pages, we have to use `block` and `endblock` keywords to create a uniquely named block.
 
+## Phase VI
+
+In this phase we'd work with creating a form in the web page. We'd make use of a Django utility called `ModelForm` and 
+implements appropriate handlers for submit action.
+
+* Create template with `ModelForm`.
+  * We created a view function `new_meeting` in the `meetings/views.py` file of the `meetings` app. This time we need to 
+    do quite a few things correctly in order to make use if Django `ModelForms`. Django offers a function for creating 
+    the simple forms, called `django.forms.modelform_factory`, which takes the models class, and specification, if any 
+    of the fields should be excluded from the form. This is again the base usage of the model form utility. This function 
+    returns a `Type[BaseModelForm]`, which we instantiate, and include in the template context.
+  * We then create a template file, in this case `meetings/templates/meetings/new.html`, which has some new constructs 
+    this time. Among other things, we have a `form` tag, and inside there is a `table` tag. For now, inside the table 
+    tag we place the form with a variable `{{ form }}` Jinja statement. Thereafter, we need to keep three important 
+    additional things in mind.
+    * We need to add the `method="post"` attribute to the form. By default, all elements use GET method, but we want the 
+      form to be sent to web server with POST method to comply with the convention.
+    * We need to include another statement inside the `form` tag with the `{% csrf_token %}` with Jinja syntax. This 
+      is a utility, which validates against the [Cross Site Request Forgery](https://en.wikipedia.org/wiki/Cross-site_request_forgery)
+      attack upon the form submission. All forms used with a Django web application must include this, otherwise the 
+      form will not work.
+    * Last but not the least, we need to add a submit button `<button type="submit">Schedule</button>` in the `form` 
+      tag, which BaseModelForm does not generate by itself.
+  * Finally, in order for the view function to be served, we'd add the path specification to the url patterns inside the 
+    meeting app, `meetings/urls.py`.
+
+<img src="form_flow.png" alt="Flow of form request"/>
+<center> Image source: <a href="https://app.pluralsight.com/library/courses/django-getting-started/table-of-contents" 
+target="_blank">django-getting-started</a> </center>
+
+* Processing the user input.
+  * Add control flow inside the `new_meeting` view function. Usually the control flow here is straight forward. We are 
+    first checking is the form is valid with the `is_valid` method. This has many advantages. Django has implemented 
+    utilities to show error hints to the browser, and this method enables them out of the box. And then construct 
+    another BaseModelForm object, if the data is valid. And on that BaseModelForm object we simply call the `save` 
+    method to persist the form data as a new `Meeting` to the database. The form validation implemented by Django 
+    provides an efficient safety mechanism against several vulnerabilities. While browsers can provide some validation 
+    options, we should not rely on them solely.
+  * If the submission is successful, we make use of another utility method `django.shortcust.redirect`, which takes 
+    the name of a view function across the apps (in this case we provide the home view function, which is defined in 
+    the meeting_planner app), retrieves the corresponding url and redirects to it. In this case we get batch to the 
+    home page, where all of our meetings are listed.
+  * Finally, there are some ways to improve the behavior of our form. For that, we would specialize the `ModelForm` 
+    class, and implement our own ModelForm. We have done that in the `meeting_planner/meetings/forms.py`. Now we are 
+    no longer using `BaseModelForm` class in the `meeting_planner/meetings/views.py` file. Using our own ModelForm 
+    helped us to get advanced form properties in the browser, especially with the date field, which we particularly 
+    tried to handle in our ModelForm class.
 
 
 
